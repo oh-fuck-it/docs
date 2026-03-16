@@ -18,30 +18,24 @@ jobs:
     name: Deploy to production server
     runs-on: ubuntu-latest
     environment: production
-
     steps:
       - name: Deploy via SSH
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ vars.DEPLOY_HOST }}
-        username: ${{ vars.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_SSH_KEY }}
-        port: ${{ vars.DEPLOY_PORT }}
-        script_stop: true
-        script: |
-          set -euo pipefail
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ vars.DEPLOY_PORT }}
+          script_stop: true
+          script: |
+            set -euo pipefail
 
-          # 这里按你的服务器实际目录修改
-          DOCS_DIR="/opt/mintlify/docs"
-          STACK_DIR="/opt/mintlify/stack"
+            DOCS_DIR="/opt/mintlify/docs"
+            STACK_DIR="/opt/mintlify/stack"
 
-          echo "==> Pull latest docs repository"
-          cd "$DOCS_DIR"
-          git fetch --all --prune
-          git reset --hard origin/main
+            cd "$DOCS_DIR"
+            git fetch --all --prune
+            git reset --hard origin/main
 
-          echo "==> Recreate mintlify service"
-          cd "$STACK_DIR"
-          docker compose up -d --force-recreate --no-deps mintlify
-
-          echo "==> Done"
+            cd "$STACK_DIR"
+            docker compose up -d --force-recreate --no-deps mintlify
