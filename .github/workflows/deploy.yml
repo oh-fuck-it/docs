@@ -1,0 +1,24 @@
+name: Deploy Mintlify Docs
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        port: ${{ secrets.DEPLOY_PORT || 22 }}
+        script: |
+          set -e
+          cd /opt/mintlify/docs
+          git fetch --all
+          git reset --hard origin/main
+          cd /opt/mintlify/stack
+          docker compose up -d --force-recreate --no-deps mintlify
